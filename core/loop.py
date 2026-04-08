@@ -1,5 +1,6 @@
 import time
 from engine.car_state import CarState
+from input.controller import ControllerInput
 
 TICK_RATE = 5 #30aps
 
@@ -9,7 +10,9 @@ def run():
     Atualiza o estado do carro continuamente ate o user encerrar o programa
     """
     state = CarState()
+    controller = ControllerInput()
     tick_interval = 1.0 / TICK_RATE
+    
     print("=" * 50)
     print("InnovaAuto - Sistema Iniciado")
     print(f"Tick Rate: {TICK_RATE}/s | Pressione Ctrl+C para sair")
@@ -17,8 +20,15 @@ def run():
     try:
         while state.running:
             start_time = time.time()
-            # aqui entrarao as chamadas dos outros modulos quando eu fazer eles pq nao estao feito :3
-            print(state)
+            
+            #exibe estado atual no terinal
+            print(
+                f"\r[Marcha: {state.gear:>2}] "
+                f"Acelerador: {state.throttle:.2f} | "
+                f"Freio: {state.brake:2f} ",
+                end=""
+            )
+            
             #controla o tempo para manter o tick constante
             elapsed = time.time() - start_time
             sleep_time = tick_interval - elapsed
@@ -27,3 +37,5 @@ def run():
                 
     except KeyboardInterrupt:
         print("\n\nSistema encerrado.")
+    finally:
+        controller.quit()
