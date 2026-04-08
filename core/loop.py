@@ -1,16 +1,14 @@
 import time
 from engine.car_state import CarState
+from engine.gearbox import Gearbox
 from input.controller import ControllerInput
 
 TICK_RATE = 5
 
 def run():
-    """
-    Loop principal do InnovaAuto.
-    Atualiza o estado do carro continuamente até o user encerrar.
-    """
     state = CarState()
     controller = ControllerInput()
+    gearbox = Gearbox()
     tick_interval = 1.0 / TICK_RATE
 
     print("=" * 50)
@@ -23,11 +21,13 @@ def run():
             start_time = time.time()
 
             # -- Leitura do controle --
-            controller.update(state)
+            controller.update(state, gearbox)
+            gearbox.update(state)
 
             # Exibe estado atual no terminal
+            shifting_tag = " Aguarde" if state.shifting else ""
             print(
-                f"\r[Marcha: {state.gear:>2}] "
+                f"\r[Marcha: {state.gear:>2}{shifting_tag}] "
                 f"Acelerador: {state.throttle:.2f} | "
                 f"Freio: {state.brake:.2f}",
                 end=""
