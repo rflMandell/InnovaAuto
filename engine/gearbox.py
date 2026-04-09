@@ -1,7 +1,7 @@
 import time
 
 #sequencia valida de marchas
-GEAR_SEQUENCE = ['R', 'N', '1', '2', '3', '4', '4']
+GEAR_SEQUENCE = ['R', 'N', '1', '2', '3', '4', '5']
 
 # tempo minimo entre trocas - para simular delay mecanico
 GEAR_SHIFT_DELAY = 0.4

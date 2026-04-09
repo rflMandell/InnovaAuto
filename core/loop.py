@@ -27,7 +27,7 @@ def run():
             # Exibe estado atual no terminal
             shifting_tag = " Aguarde" if state.shifting else ""
             print(
-                f"\r[Marcha: {state.gear:>2}{shifting_tag}] "
+                f"\r[Marcha: {state.gear:>2} {shifting_tag}] "
                 f"Acelerador: {state.throttle:.2f} | "
                 f"Freio: {state.brake:.2f}",
                 end=""

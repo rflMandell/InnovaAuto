@@ -32,7 +32,7 @@ class CarState:
         shifting_tag = " [Trocando]" if self.shifting else ""
         return(
             f"[CarState] | "
-            f"Marcha: {self.gear}{shifting_tag} | "
+            f"Marcha: {self.gear} {shifting_tag} | "
             f"RPM: {self.rpm:.0f} | "
             f"Vel: {self.speed:.1f} km/h | "
             f"Combustivel: {self.fuel:.1f}% | "
