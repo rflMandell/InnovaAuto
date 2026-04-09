@@ -35,7 +35,7 @@ class Motor:
     
     def update(self, state, delta_time):
         """
-        Atualiza o RPM no CARState e cada tick
+        Atualiza o RPM no CarState e cada tick
         
         delta_time: tempo em segundos desde o ultimo tick
         """
@@ -84,14 +84,22 @@ class Motor:
             state.rpm = RPM_IDLE
             
             
-def _approach():
+def _approach(current, target, rate, delta):
     """
     Move 'current' em direcao a 'target' na velocidade 'rate' por segundo.
     n ultrapassa o target
     """
+    diff = target - current
+    step = rate * delta
     
+    if abs(diff) <= target:
+        return target
+    
+    return current + step if diff > 0 else current - step
 
-def _redline_cur(state):
+
+def _redline_cut(state):
     """
     a
     """
+    pass
