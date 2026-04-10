@@ -1,7 +1,9 @@
+# o loopzao louco q faz a porra toda funcionar
 import time
 from engine.car_state import CarState
 from engine.gearbox import Gearbox
 from engine.motor import Motor
+from engine.velocity import Velocity
 from input.controller import ControllerInput
 
 TICK_RATE = 5
@@ -11,6 +13,7 @@ def run():
     controller = ControllerInput()
     gearbox = Gearbox()
     motor = Motor()
+    velocity = Velocity()
     tick_interval = 1.0 / TICK_RATE
 
     #controle de tempo para delta_time
@@ -31,17 +34,10 @@ def run():
             controller.update(state, gearbox)
             gearbox.update(state)
             motor.update(state, delta_time)
+            velocity.update(state, delta_time)
 
             # Exibe estado atual no terminal
-            rpm_bar = _rpm_bar(state.rpm)
-            shifting_tag = " Aguarde" if state.shifting else ""
-            print(
-                f"\r[Marcha: {state.gear:>2} {shifting_tag}] "
-                f"RPM: {state.rpm:>6.0f} {rpm_bar} | "
-                f"Acelerador: {state.throttle:.2f} | "
-                f"Freio: {state.brake:.2f}",
-                end=""
-            )
+            _print_state(state)
 
             #controla o tempo para manter o tick constante
             elapsed = time.time() - now
@@ -54,15 +50,33 @@ def run():
     finally:
         controller.quit()
         
-def _rpm_bar(rpm, max_rpm=7000, bar_length=20):
-    """Exibe uma barra visual de RPM no terminal."""
-    filled = int((rpm / max_rpm) * bar_length)
-    filled = max(0, min(filled, bar_length))
-    bar = "█" * filled + "░" * (bar_length - filled)
+def _print_state(state):
+    """Exibe o estado atual do carro de forma organizada no terminal."""
+    rpm_bar = _build_bar(state.rpm, 0, 7000, length=15)
+    spd_bar = _build_bar(state.speed, 0, 220, length=15)
+    shifting_tag = " Aguardando" if state.shifting else "   "
+
     #mudar o simbolo perto do redline
-    if rpm >= 6500:
-        return f"[{bar}] 🔴"
-    elif rpm >= 5000:
-        return f"[{bar}] 🟡"
+    if state.rpm >= 6500:
+        rpm_icon = "🔴"
+    elif state.rpm >= 5000:
+        rpm_icon = "🟡"
     else:
-        return f"[{bar}] 🟢"
+        rpm_icon = "🟢"
+        
+    print(
+        f"\r"
+        f"Marcha: {state.gear:>2} {shifting_tag} | "
+        f"RPM: {state.rpm:>5.0f} {rpm_icon} {rpm_bar} | "
+        f"Vel: {state.speed:>6.1f}km/h {spd_bar} | "
+        f"Acel: {state.throttle:.2f} | "
+        f"Freio: {state.brake:.2f}",
+        end=""
+    )
+        
+def _build_bar(value, min_val, max_val, length=15):
+    """Gera uma barra de progresso visual para o terminal"""
+    ratio = (value - min_val) / (max_val - min_val)
+    ratio = max(0.0, min(ratio, 1.0))
+    filled = int(ratio* length)
+    return "[" + "█" * filled + "░" * (length - filled) + "]"
