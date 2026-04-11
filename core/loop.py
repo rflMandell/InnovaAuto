@@ -4,6 +4,7 @@ from engine.car_state import CarState
 from engine.gearbox import Gearbox
 from engine.motor import Motor
 from engine.velocity import Velocity
+from sensors.vehicle_sensors import VehicleSensors
 from input.controller import ControllerInput
 
 TICK_RATE = 5
@@ -14,6 +15,8 @@ def run():
     gearbox = Gearbox()
     motor = Motor()
     velocity = Velocity()
+    sensors = VehicleSensors()
+    
     tick_interval = 1.0 / TICK_RATE
 
     #controle de tempo para delta_time
@@ -35,6 +38,7 @@ def run():
             gearbox.update(state)
             motor.update(state, delta_time)
             velocity.update(state, delta_time)
+            sensors.update(state, delta_time)
 
             # Exibe estado atual no terminal
             _print_state(state)
@@ -52,25 +56,32 @@ def run():
         
 def _print_state(state):
     """Exibe o estado atual do carro de forma organizada no terminal."""
-    rpm_bar = _build_bar(state.rpm, 0, 7000, length=15)
-    spd_bar = _build_bar(state.speed, 0, 220, length=15)
-    shifting_tag = " Aguardando" if state.shifting else "   "
+    
+    rpm_bar  = _build_bar(state.rpm, 0, 7000, length=10)
+    spd_bar  = _build_bar(state.speed, 0, 220, length=10)
+    fuel_bar = _build_bar(state.fuel, 0, 100, length=10)
+    temp_bar = _build_bar(state.oil_temp, 20, 150, length=10)
 
-    #mudar o simbolo perto do redline
-    if state.rpm >= 6500:
-        rpm_icon = "🔴"
-    elif state.rpm >= 5000:
-        rpm_icon = "🟡"
-    else:
-        rpm_icon = "🟢"
-        
+    # Ícones de status
+    rpm_icon  = "🔴" if state.rpm >= 6500 else ("🟡" if state.rpm >= 5000 else "🟢")
+    
+    fuel_icon = "⛽🔴" if state.fuel <= 15 else "⛽"
+    
+    temp_icon = "🌡️🔴" if state.oil_temp >= 110 else ("🌡️🟡" if state.oil_temp >= 90 else "🌡️🟢")
+    
+    ce_icon   = " CHECK ENGINE" if state.check_engine else ""
+
+    shifting_tag = "AGUARDE" if state.shifting else "  "
+
     print(
         f"\r"
-        f"Marcha: {state.gear:>2} {shifting_tag} | "
-        f"RPM: {state.rpm:>5.0f} {rpm_icon} {rpm_bar} | "
-        f"Vel: {state.speed:>6.1f}km/h {spd_bar} | "
-        f"Acel: {state.throttle:.2f} | "
-        f"Freio: {state.brake:.2f}",
+        f"[{state.gear:>2}]{shifting_tag} "
+        f"RPM:{state.rpm:>5.0f}{rpm_icon}{rpm_bar} "
+        f"Vel:{state.speed:>6.1f}km/h {spd_bar} "
+        f"{fuel_icon}{state.fuel:>5.1f}% {fuel_bar} "
+        f"Auto:{state.autonomy:>5.0f}km "
+        f"{temp_icon}{state.oil_temp:>5.1f}°C {temp_bar}"
+        f"{ce_icon}   ",
         end=""
     )
         
