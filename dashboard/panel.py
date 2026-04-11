@@ -129,15 +129,14 @@ class Dashboard:
         c.create_text(60, 495, text="TEMP.", font=("Helvetica", 9), fill=LIGHT_GRAY, anchor="w")
         c.create_text(60, 535, text="AUTO.", font=("Helvetica", 9), fill=LIGHT_GRAY, anchor="w")
 
-        # ── Barras de pedal — posição fixa abaixo do velocímetro ──
-        # (apenas labels estáticos; barras dinâmicas no _update)
+        # ── Barras de pedal — lado esquerdo, abaixo do conta-giros ──
         c.create_text(
-            690, 380,
+            95, 390,
             text="ACEL",
             font=("Helvetica", 8), fill=LIGHT_GRAY, anchor="center"
         )
         c.create_text(
-            730, 380,
+            140, 390,
             text="FREIO",
             font=("Helvetica", 8), fill=LIGHT_GRAY, anchor="center"
         )
@@ -219,10 +218,9 @@ class Dashboard:
         )
 
         # ── Barras de pedal ──────────────────────────────────────────
-        # Posicionadas abaixo e à esquerda do velocímetro,
-        # sem colidir com o arco
-        _draw_pedal_bar(c, 678, 370, s.throttle, GREEN,  tag="dynamic")
-        _draw_pedal_bar(c, 718, 370, s.brake,    RED,    tag="dynamic")
+        # Lado esquerdo do painel, abaixo do conta-giros
+        _draw_pedal_bar(c, 80,  380, s.throttle, GREEN, tag="dynamic")
+        _draw_pedal_bar(c, 125, 380, s.brake,    RED,   tag="dynamic")
 
         # ── Barra de Combustível ─────────────────────────────────────
         fuel_color = RED if s.fuel <= 15 else (YELLOW if s.fuel <= 30 else GREEN)
