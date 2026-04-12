@@ -45,7 +45,7 @@ class Dashboard:
 
         self.root.title("InnovaAuto — Painel Digital")
         self.root.configure(bg=BG)
-        self.root.resizable(False, False)
+        self.root.resizable(True, True)
         self.root.geometry(f"{WIN_W}x{WIN_H}")
 
         self.canvas = tk.Canvas(
